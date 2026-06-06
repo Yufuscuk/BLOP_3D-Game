@@ -22,7 +22,7 @@ public class PlayerMovement : MonoBehaviour
     public float score = 0f;
     private int loadedHighScore = 0;
 
-    public float scoreMultiplier = 2.5f; // Yarıya düşürüldü
+    public float scoreMultiplier = 5f;
     public float gameSpeed = 1f;
 
     private bool isGameOver = false;
@@ -177,7 +177,7 @@ public class PlayerMovement : MonoBehaviour
             SoundManager.Instance.PlayStarSound();
 
             // Yıldızın taban puanı (Örn: 50) ile anlık oyun hızını (zorluğu) çarpıyoruz
-            float kazanilanPuan = 20f * gameSpeed; // Yarıya düşürüldü
+            float kazanilanPuan = 40f * gameSpeed;
 
             // Hesaplanmış dinamik puanı skora ekle
             score += kazanilanPuan;
