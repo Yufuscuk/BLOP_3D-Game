@@ -1,23 +1,11 @@
 using UnityEngine;
 using UnityEditor;
 
-[InitializeOnLoad]
 public class RevertObstacle
 {
-    static RevertObstacle()
+    [MenuItem("Tools/Obstacles/Revert to Red Cube")]
+    public static void RevertNow()
     {
-        EditorApplication.delayCall += RevertNow;
-        EditorApplication.playModeStateChanged += state => 
-        {
-            if (state == PlayModeStateChange.EnteredEditMode) RevertNow();
-        };
-    }
-
-    private static void RevertNow()
-    {
-        if (EditorApplication.isPlaying) return;
-        if (SessionState.GetBool("ObstacleRevertedRed", false)) return;
-
         // 1. Basit bir Kırmızı URP materyali oluştur
         string matPath = "Assets/RedCubeMat.mat";
         Material redMat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
@@ -64,8 +52,9 @@ public class RevertObstacle
                 BoxCollider boxColl = prefabRoot.GetComponent<BoxCollider>();
                 if (boxColl == null) 
                 {
-                    prefabRoot.AddComponent<BoxCollider>();
+                    boxColl = prefabRoot.AddComponent<BoxCollider>();
                 }
+                boxColl.isTrigger = true;
 
                 Debug.Log("[RevertObstacle] Engel orijinal Küp haline donduruldu, sadece rengi kirmizi yapildi!");
             }
@@ -74,7 +63,5 @@ public class RevertObstacle
         {
             Debug.LogError("[RevertObstacle] Obstacle.prefab bulunamadi.");
         }
-
-        SessionState.SetBool("ObstacleRevertedRed", true);
     }
 }

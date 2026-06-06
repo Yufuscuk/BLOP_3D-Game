@@ -16,7 +16,7 @@ public class FixObstacleTrigger
     private static void FixTrigger()
     {
         if (EditorApplication.isPlaying) return;
-        if (SessionState.GetBool("ObstacleTriggerFixed", false)) return;
+        if (SessionState.GetBool("ObstacleTriggerFixed_v2", false)) return;
 
         string prefabPath = "Assets/Obstacle.prefab";
         GameObject obstaclePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
@@ -33,9 +33,16 @@ public class FixObstacleTrigger
                     boxColl.isTrigger = true;
                     Debug.Log("[FixTrigger] Engel BoxCollider isTrigger = true olarak duzeltildi!");
                 }
+
+                SphereCollider sphereColl = prefabRoot.GetComponent<SphereCollider>();
+                if (sphereColl != null && !sphereColl.isTrigger)
+                {
+                    sphereColl.isTrigger = true;
+                    Debug.Log("[FixTrigger] Engel SphereCollider isTrigger = true olarak duzeltildi!");
+                }
             }
         }
 
-        SessionState.SetBool("ObstacleTriggerFixed", true);
+        SessionState.SetBool("ObstacleTriggerFixed_v2", true);
     }
 }

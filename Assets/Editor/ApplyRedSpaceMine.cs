@@ -16,7 +16,7 @@ public class ApplyRedSpaceMine
     private static void SetupSpaceMine()
     {
         if (EditorApplication.isPlaying) return;
-        if (SessionState.GetBool("RedSpaceMineSetup_2", false)) return;
+        if (SessionState.GetBool("RedSpaceMineSetup_4", false)) return;
 
         // 1. Kırmızı, parlayan bir URP materyali olustur
         string matPath = "Assets/RedSpaceMineMat.mat";
@@ -25,8 +25,8 @@ public class ApplyRedSpaceMine
         {
             redMat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
             
-            // Koyu gri metalik taban rengi
-            redMat.SetColor("_BaseColor", new Color(0.2f, 0.2f, 0.2f));
+            // Parlak kırmızı taban rengi
+            redMat.SetColor("_BaseColor", new Color(1f, 0.1f, 0.1f));
             redMat.SetFloat("_Metallic", 0.9f);
             redMat.SetFloat("_Smoothness", 0.6f);
 
@@ -63,6 +63,13 @@ public class ApplyRedSpaceMine
                 MeshRenderer mr = prefabRoot.GetComponent<MeshRenderer>();
                 if (mr != null) mr.sharedMaterial = redMat;
 
+                // Çocuk nesnelerin materyallerini de kırmızı yap (Çift mesh rendering ve gri arka kısım sorununu çözer)
+                MeshRenderer[] childRenderers = prefabRoot.GetComponentsInChildren<MeshRenderer>(true);
+                foreach (MeshRenderer childRenderer in childRenderers)
+                {
+                    childRenderer.sharedMaterial = redMat;
+                }
+
                 // Boyutunu ayarla (Modelin orijinal buyuklugune gore kucultebiliriz, x0.5 yapalim)
                 prefabRoot.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
 
@@ -92,6 +99,6 @@ public class ApplyRedSpaceMine
             Debug.LogError("[SpaceMine] Obstacle.prefab bulunamadi.");
         }
 
-        SessionState.SetBool("RedSpaceMineSetup_2", true);
+        SessionState.SetBool("RedSpaceMineSetup_4", true);
     }
 }

@@ -30,9 +30,9 @@ public class CapsuleMove : MonoBehaviour
         // 2. Havali donus efekti
         transform.Rotate(new Vector3(0.5f, 1f, 0.2f).normalized * rotateSpeed * Time.deltaTime);
 
-        // 3. Hafif dalgalanma efekti
+        // 3. Hafif dalgalanma efekti ve Z=0 kilidi
         float newY = startY + (Mathf.Sin(Time.time * floatSpeed) * floatHeight);
-        transform.position = new Vector3(transform.position.x, newY, transform.position.z);
+        transform.position = new Vector3(transform.position.x, newY, 0f);
 
         // 4. Ekrandan cikinca yok et
         if (transform.position.x < -10f)

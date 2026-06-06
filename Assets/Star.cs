@@ -31,9 +31,9 @@ public class Star : MonoBehaviour
         // 2. DÖNME EFEKTİ
         transform.Rotate(Vector3.up * rotateSpeed * Time.deltaTime);
 
-        // 3. YUKARI AŞAĞI SÜZÜLME (Dalgalanma Efekti)
+        // 3. YUKARI AŞAĞI SÜZÜLME (Dalgalanma Efekti ve Z=0 kilidi)
         float newY = startY + (Mathf.Sin(Time.time * floatSpeed) * floatHeight);
-        transform.position = new Vector3(transform.position.x, newY, transform.position.z);
+        transform.position = new Vector3(transform.position.x, newY, 0f);
 
         // 4. EKRANDAN ÇIKINCA YOK ET
         if (transform.position.x < -10f)

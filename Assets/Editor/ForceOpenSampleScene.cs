@@ -13,7 +13,7 @@ public class ForceOpenSampleScene
     private static void OpenMainScene()
     {
         if (EditorApplication.isPlaying) return;
-        if (SessionState.GetBool("SampleSceneForcedOpen1", false)) return;
+        if (SessionState.GetBool("SampleSceneForcedOpen2", false)) return;
 
         string mainScenePath = "Assets/Scenes/SampleScene.unity";
 
@@ -25,6 +25,6 @@ public class ForceOpenSampleScene
             Debug.Log("[SceneFix] Baska bir sahnede kalinmis, orijinal SampleScene basariyla geri yuklendi.");
         }
 
-        SessionState.SetBool("SampleSceneForcedOpen1", true);
+        SessionState.SetBool("SampleSceneForcedOpen2", true);
     }
 }
