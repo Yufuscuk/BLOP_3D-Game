@@ -91,7 +91,7 @@ public class PlayerMovement : MonoBehaviour
             int currentScore = Mathf.FloorToInt(score);
             scoreText.text = "Score: " + currentScore;
 
-            // Eger mevcut skor yuksek skoru gectiyse ekranda anlik guncelle
+            // Eger mevcut skor yuksek skoru gectiyse ekranda anlik guncelle ve hafizaya al
             if (currentScore > loadedHighScore)
             {
                 loadedHighScore = currentScore;
@@ -99,6 +99,7 @@ public class PlayerMovement : MonoBehaviour
                 {
                     highScoreText.text = "Best: " + loadedHighScore;
                 }
+                PlayerPrefs.SetInt("HighScore", loadedHighScore);
             }
         }
 
@@ -193,6 +194,7 @@ public class PlayerMovement : MonoBehaviour
                 {
                     highScoreText.text = "Best: " + loadedHighScore;
                 }
+                PlayerPrefs.SetInt("HighScore", loadedHighScore);
             }
 
             Instantiate(starEffect, other.transform.position, Quaternion.identity);
@@ -246,5 +248,27 @@ public class PlayerMovement : MonoBehaviour
         }
 
         slowMoCoroutine = null;
+    }
+
+    // Oyun Unity Editor'de veya aniden kapatılırsa skoru kaybetmemek için:
+    void OnDestroy()
+    {
+        SaveHighScore();
+    }
+
+    void OnApplicationQuit()
+    {
+        SaveHighScore();
+    }
+
+    private void SaveHighScore()
+    {
+        int finalScore = Mathf.FloorToInt(score);
+        int savedHighScore = PlayerPrefs.GetInt("HighScore", 0);
+        if (finalScore > savedHighScore)
+        {
+            PlayerPrefs.SetInt("HighScore", finalScore);
+            PlayerPrefs.Save();
+        }
     }
 }
