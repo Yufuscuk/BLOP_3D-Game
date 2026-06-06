@@ -113,8 +113,8 @@ public class RemoveGhostAndRestoreCapsule
             float maxDim = Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);
             if (maxDim < 0.0001f) maxDim = 1f;
 
-            // Modelin boyutunu 1.5 birime eşitle
-            float targetScale = 1.5f / maxDim;
+            // Modelin boyutunu 2.0 birime eşitle (Kullanıcı büyütmek istedi)
+            float targetScale = 2.0f / maxDim;
 
             // Tekrar Player'ın çocuğu yap
             modelObj.transform.SetParent(playerTransform);
@@ -122,24 +122,23 @@ public class RemoveGhostAndRestoreCapsule
             // Ölçeği ayarla
             modelObj.transform.localScale = new Vector3(targetScale, targetScale, targetScale);
 
-            // Orijinal bounds'un merkezini ve altını bulup ofsetle
-            float bottomY = bounds.min.y * targetScale;
-            float targetY = -1f - bottomY; // Kapsülün tabanı Y = -1
+            // Orijinal bounds'un merkezini bul ve tam orijine (şeridin tam ortasına) sabitle
+            float targetY = -(bounds.center.y * targetScale);
             
             float targetX = -(bounds.center.x * targetScale);
             float targetZ = -(bounds.center.z * targetScale);
 
             modelObj.transform.localPosition = new Vector3(targetX, targetY, targetZ);
             
-            // Yüzünü sağa dönmesi için
-            modelObj.transform.localRotation = Quaternion.Euler(0f, 90f, 0f);
+            // Yüzünü sağa dönük halden (90) 25 derece ekrana doğru çevir (90 + 25 = 115)
+            modelObj.transform.localRotation = Quaternion.Euler(0f, 115f, 0f);
         }
         else
         {
             modelObj.transform.SetParent(playerTransform);
-            modelObj.transform.localPosition = new Vector3(0f, -1f, 0f);
-            modelObj.transform.localRotation = Quaternion.Euler(0f, 90f, 0f);
-            modelObj.transform.localScale = Vector3.one * 1.5f;
+            modelObj.transform.localPosition = new Vector3(0f, 0f, 0f);
+            modelObj.transform.localRotation = Quaternion.Euler(0f, 115f, 0f);
+            modelObj.transform.localScale = Vector3.one * 2.0f;
         }
     }
 }

@@ -15,6 +15,10 @@ public class Spawner : MonoBehaviour
     private float starTimer = 1f; // Yıldızlar engellerden bağımsız başlasın diye ön yükleme
     private float capsuleTimer = 5f; // İlk kapsül biraz daha geç çıksın
 
+    // Çakışmayı (üst üste binmeyi) önlemek için her şeridin son obje üretme zamanını tutuyoruz
+    private float[] lastSpawnTimePerLane = new float[3] { -10f, -10f, -10f };
+    private float minTimeBetweenSpawnsOnSameLane = 0.7f;
+
     void Update()
     {
         // Oyun durmuşsa spawn yapma (Örn: Game Over veya Pause)
@@ -57,28 +61,76 @@ public class Spawner : MonoBehaviour
 
     void SpawnObstacle()
     {
-        int lane = Random.Range(0, 3);
-        float yPos = (lane - 1) * 2f; // lane 0 -> -2, 1 -> 0, 2 -> 2
+        float currentScore = PlayerMovement.Instance != null ? PlayerMovement.Instance.score : 0f;
+        
+        bool spawnDouble = false;
+        if (currentScore >= 1000f)
+        {
+            // 1000 puandan sonra temel ihtimal %20. Her 1000 puanda %10 artar.
+            float extraChance = ((currentScore - 1000f) / 1000f) * 0.10f;
+            float doubleChance = 0.20f + extraChance;
+            
+            // Oyunun imkansızlaşmaması için ihtimal maksimum %65'te kalır
+            doubleChance = Mathf.Min(doubleChance, 0.65f);
 
+            if (Random.value < doubleChance)
+            {
+                spawnDouble = true;
+            }
+        }
+
+        // Birinci engeli üret
+        int lane1 = GetSafeLane();
+        SpawnObstacleAtLane(lane1);
+
+        // Şartlar sağlandıysa ikinci engeli üret (GetSafeLane dolu şeridi seçmeyecektir)
+        if (spawnDouble)
+        {
+            int lane2 = GetSafeLane();
+            SpawnObstacleAtLane(lane2);
+        }
+    }
+
+    void SpawnObstacleAtLane(int lane)
+    {
+        float yPos = (lane - 1) * (PlayerMovement.Instance != null ? PlayerMovement.Instance.laneDistance : 2f);
         Vector3 spawnPos = new Vector3(9f, yPos, 0f);
         Instantiate(obstaclePrefab, spawnPos, Quaternion.identity);
     }
 
     void SpawnStar()
     {
-        int lane = Random.Range(0, 3);
-        float yPos = (lane - 1) * 2f;
-
+        int lane = GetSafeLane();
+        
+        float yPos = (lane - 1) * (PlayerMovement.Instance != null ? PlayerMovement.Instance.laneDistance : 2f);
         Vector3 spawnPos = new Vector3(9f, yPos, 0f);
         Instantiate(starPrefab, spawnPos, Quaternion.identity);
     }
 
     void SpawnCapsule()
     {
-        int lane = Random.Range(0, 3);
-        float yPos = (lane - 1) * 2f;
-
+        int lane = GetSafeLane();
+        
+        float yPos = (lane - 1) * (PlayerMovement.Instance != null ? PlayerMovement.Instance.laneDistance : 2f);
         Vector3 spawnPos = new Vector3(9f, yPos, 0f);
         Instantiate(capsulePrefab, spawnPos, Quaternion.identity);
+    }
+
+    // Üst üste binmeyi engellemek için güvenli (boş) bir şerit bulur
+    int GetSafeLane()
+    {
+        int lane = Random.Range(0, 3);
+        int attempts = 0;
+        
+        // Eğer seçilen şeritte çok yakın zamanda bir obje çıktıysa, farklı bir şerit dene
+        while (Time.time - lastSpawnTimePerLane[lane] < minTimeBetweenSpawnsOnSameLane && attempts < 10)
+        {
+            lane = Random.Range(0, 3);
+            attempts++;
+        }
+        
+        // O şeride obje yerleştirildiğini kaydet
+        lastSpawnTimePerLane[lane] = Time.time;
+        return lane;
     }
 }

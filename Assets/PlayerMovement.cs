@@ -19,10 +19,10 @@ public class PlayerMovement : MonoBehaviour
     public TextMeshProUGUI highScoreText;
     public GameObject starEffect;
 
-    private float score = 0f;
+    public float score = 0f;
     private int loadedHighScore = 0;
 
-    public float scoreMultiplier = 5f;
+    public float scoreMultiplier = 2.5f; // Yarıya düşürüldü
     public float gameSpeed = 1f;
 
     private bool isGameOver = false;
@@ -39,6 +39,15 @@ public class PlayerMovement : MonoBehaviour
 
     void Start()
     {
+        // Ekranın tam yüksekliğini hesaplayıp 3 eşit şeride (bloklara) orantılı böler
+        if (Camera.main != null)
+        {
+            float distance = Mathf.Abs(Camera.main.transform.position.z);
+            float fov = Camera.main.fieldOfView;
+            float visibleHeight = 2f * distance * Mathf.Tan(fov * 0.5f * Mathf.Deg2Rad);
+            laneDistance = visibleHeight / 3f;
+        }
+
         Time.timeScale = 1f; // Sahne yeniden yuklendiginde zamanin akmasini garanti altina alir
 
         // Kamera sarsinti bilesenini bul
@@ -168,7 +177,7 @@ public class PlayerMovement : MonoBehaviour
             SoundManager.Instance.PlayStarSound();
 
             // Yıldızın taban puanı (Örn: 50) ile anlık oyun hızını (zorluğu) çarpıyoruz
-            float kazanilanPuan = 40f * gameSpeed;
+            float kazanilanPuan = 20f * gameSpeed; // Yarıya düşürüldü
 
             // Hesaplanmış dinamik puanı skora ekle
             score += kazanilanPuan;
