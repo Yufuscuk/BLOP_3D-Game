@@ -17,10 +17,12 @@ public class PlayerMovement : MonoBehaviour
     public GameObject gameOverPanel;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI highScoreText;
+    public TextMeshProUGUI timerText;
     public GameObject starEffect;
 
     public float score = 0f;
     private int loadedHighScore = 0;
+    public float timeLeft = 30f;
 
     public float scoreMultiplier = 5f;
     public float gameSpeed = 1f;
@@ -39,6 +41,22 @@ public class PlayerMovement : MonoBehaviour
 
     void Start()
     {
+        // TimerText UI eksikse otomatik uret (Runtime)
+        if (scoreText != null && timerText == null)
+        {
+            GameObject timerGO = Instantiate(scoreText.gameObject, scoreText.transform.parent);
+            timerGO.name = "TimerText";
+            timerText = timerGO.GetComponent<TextMeshProUGUI>();
+            RectTransform rect = timerText.GetComponent<RectTransform>();
+            RectTransform scoreRect = scoreText.GetComponent<RectTransform>();
+            rect.anchorMin = scoreRect.anchorMin;
+            rect.anchorMax = scoreRect.anchorMax;
+            rect.pivot = scoreRect.pivot;
+            rect.anchoredPosition = new Vector2(scoreRect.anchoredPosition.x, scoreRect.anchoredPosition.y - 100f);
+            timerText.color = new Color(1f, 0.4f, 0.4f, 1f);
+            timerText.text = "Time: 30s";
+        }
+
         // Ekranın tam yüksekliğini hesaplayıp 3 eşit şeride (bloklara) orantılı böler
         if (Camera.main != null)
         {
@@ -81,6 +99,22 @@ public class PlayerMovement : MonoBehaviour
         // Hacmi korumak için Y uzadıkça X ve Z daralır, Y basıldıkça X ve Z genişler
         float scaleXZ = 1f - (scaleY - 1f) * 0.5f;
         transform.localScale = new Vector3(scaleXZ, scaleY, scaleXZ);
+
+        // TIMER SYSTEM
+        if (!isGameOver)
+        {
+            timeLeft -= Time.deltaTime;
+            if (timeLeft <= 0f)
+            {
+                timeLeft = 0f;
+                TriggerGameOver();
+            }
+            
+            if (timerText != null)
+            {
+                timerText.text = "Time: " + Mathf.CeilToInt(timeLeft).ToString() + "s";
+            }
+        }
 
         // SCORE SYSTEM
         if (!isGameOver)
@@ -138,37 +172,43 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    public void TriggerGameOver()
+    {
+        if (isGameOver) return;
+        
+        isGameOver = true;
+        Time.timeScale = 0f;
+
+        // Guclu Kamera Sarsintisi tetikle (0.4 sn, 0.3 siddet)
+        if (cameraShake != null)
+        {
+            cameraShake.TriggerShake(0.4f, 0.3f);
+        }
+
+        // Oyun bittiginde eger yeni rekor kirildiysa diskte guncelle
+        int finalScore = Mathf.FloorToInt(score);
+        int savedHighScore = PlayerPrefs.GetInt("HighScore", 0);
+        if (finalScore > savedHighScore)
+        {
+            PlayerPrefs.SetInt("HighScore", finalScore);
+            PlayerPrefs.Save();
+        }
+
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(true);
+        }
+
+        // Arka plan muzigini durdur
+        SoundManager.Instance.StopBackgroundMusic();
+    }
+
     void OnTriggerEnter(Collider other)
     {
         // OBSTACLE
         if (other.CompareTag("Obstacle"))
         {
-            isGameOver = true;
-
-            Time.timeScale = 0f;
-
-            // Guclu Kamera Sarsintisi tetikle (0.4 sn, 0.3 siddet)
-            if (cameraShake != null)
-            {
-                cameraShake.TriggerShake(0.4f, 0.3f);
-            }
-
-            // Oyun bittiginde eger yeni rekor kirildiysa diskte guncelle
-            int finalScore = Mathf.FloorToInt(score);
-            int savedHighScore = PlayerPrefs.GetInt("HighScore", 0);
-            if (finalScore > savedHighScore)
-            {
-                PlayerPrefs.SetInt("HighScore", finalScore);
-                PlayerPrefs.Save();
-            }
-
-            if (gameOverPanel != null)
-            {
-                gameOverPanel.SetActive(true);
-            }
-
-            // Arka plan muzigini durdur
-            SoundManager.Instance.StopBackgroundMusic();
+            TriggerGameOver();
         }
 
         // STAR
@@ -208,12 +248,19 @@ public class PlayerMovement : MonoBehaviour
             Destroy(other.gameObject);
         }
 
-        // CAPSULE (Zamani yavaslatma)
+        // CAPSULE (Zamani yavaslatma ve Sure kazanma)
         SlowMotionCapsule capsule = other.GetComponent<SlowMotionCapsule>();
         if (capsule != null)
         {
-            // Zamanı yavaşlat (2.5 saniyeliğine 0.6x hız - daha dengeli ve akıcı bir oyun hissi için)
-            ActivateSlowMotion(2.5f, 0.6f);
+            // Sure ekle (+5 saniye)
+            timeLeft += 5f;
+            if (timerText != null)
+            {
+                timerText.text = "Time: " + Mathf.CeilToInt(timeLeft).ToString() + "s";
+            }
+
+            // Zamanı yavaşlat (1 saniyeliğine 0.6x hız - daha dengeli ve akıcı bir oyun hissi için)
+            ActivateSlowMotion(1.0f, 0.6f);
 
             // Hafif sarsıntı tetikle
             if (cameraShake != null)

@@ -52,7 +52,12 @@ public class Spawner : MonoBehaviour
 
         // 3. MAVİ KAPSÜL SPAWN SİSTEMİ
         capsuleTimer += Time.deltaTime;
-        if (capsuleTimer >= baseCapsuleInterval)
+        
+        // Oyun başında (hız 1.0) 3.5 saniyede bir gelsin (5 saniye verdiği için süre birikir, hata payı artar).
+        // Oyun en yüksek hıza (2.5) ulaştığında aralık 4.8 saniyeye çıksın (Kıl payı yeter, hata payı çok azalır).
+        float currentCapsuleInterval = Mathf.Lerp(3.5f, 4.8f, (currentSpeed - 1f) / 1.5f);
+        
+        if (capsuleTimer >= currentCapsuleInterval)
         {
             SpawnCapsule();
             capsuleTimer = 0f;

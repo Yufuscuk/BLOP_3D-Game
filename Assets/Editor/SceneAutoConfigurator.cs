@@ -28,7 +28,7 @@ public class SceneAutoConfigurator
         AssetDatabase.Refresh();
 
         // Her degisiklikte versiyonu artir
-        if (SessionState.GetBool("SceneConfiguredCleanFinal", false))
+        if (SessionState.GetBool("SceneConfiguredCleanFinal_v2", false))
             return;
 
         Debug.Log("[AutoConfig] Temiz sahne yapilandirmasi baslatiliyor (Asset'siz Saf Sürüm)...");
@@ -110,6 +110,41 @@ public class SceneAutoConfigurator
                     Debug.Log("[AutoConfig] HighScoreText olusturuldu.");
                     changed = true;
                 }
+            }
+        }
+
+        // 3.5 TimerText olustur (yoksa)
+        if (player.scoreText != null && player.timerText == null)
+        {
+            GameObject scoreGO = player.scoreText.gameObject;
+            GameObject existingTimer = GameObject.Find("TimerText");
+            if (existingTimer == null)
+            {
+                GameObject timerGO = GameObject.Instantiate(scoreGO, scoreGO.transform.parent);
+                timerGO.name = "TimerText";
+
+                RectTransform rect = timerGO.GetComponent<RectTransform>();
+                TextMeshProUGUI timerTextComp = timerGO.GetComponent<TextMeshProUGUI>();
+                RectTransform scoreRect = scoreGO.GetComponent<RectTransform>();
+
+                if (rect != null && timerTextComp != null && scoreRect != null)
+                {
+                    rect.anchorMin = scoreRect.anchorMin;
+                    rect.anchorMax = scoreRect.anchorMax;
+                    rect.pivot = scoreRect.pivot;
+                    rect.anchoredPosition = new Vector2(scoreRect.anchoredPosition.x, scoreRect.anchoredPosition.y - 100f);
+                    
+                    timerTextComp.color = new Color(1f, 0.3f, 0.3f, 1f);
+                    timerTextComp.text = "Time: 30s";
+                    player.timerText = timerTextComp;
+                    Debug.Log("[AutoConfig] TimerText olusturuldu.");
+                    changed = true;
+                }
+            }
+            else
+            {
+                player.timerText = existingTimer.GetComponent<TextMeshProUGUI>();
+                changed = true;
             }
         }
 
