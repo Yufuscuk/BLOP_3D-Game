@@ -34,7 +34,7 @@ Transform:
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 6369457013645084942}
+  - {fileID: 6003947329803473973}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8154228469362340780
@@ -145,7 +145,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21604bcb5f87cc94d997bf3d01f0e130, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SlowMotionCapsule
---- !u!1001 &6912570321615908581
+--- !u!1001 &6113908297900372958
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -215,28 +215,28 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 08fa2298aec4c184489604dca20d617c, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 4273780469403367889}
+      addedObject: {fileID: 1260473126921551133}
   m_SourcePrefab: {fileID: 100100000, guid: 08fa2298aec4c184489604dca20d617c, type: 3}
---- !u!1 &5994022568395264948 stripped
+--- !u!4 &6003947329803473973 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 08fa2298aec4c184489604dca20d617c, type: 3}
+  m_PrefabInstance: {fileID: 6113908297900372958}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6348279859791728271 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 08fa2298aec4c184489604dca20d617c, type: 3}
-  m_PrefabInstance: {fileID: 6912570321615908581}
+  m_PrefabInstance: {fileID: 6113908297900372958}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4273780469403367889
+--- !u!114 &1260473126921551133
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5994022568395264948}
+  m_GameObject: {fileID: 6348279859791728271}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e1fa6bf05519c2442b7fad00a555c7b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RotateObject
   rotationSpeed: {x: 0, y: 150, z: 0}
---- !u!4 &6369457013645084942 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 08fa2298aec4c184489604dca20d617c, type: 3}
-  m_PrefabInstance: {fileID: 6912570321615908581}
-  m_PrefabAsset: {fileID: 0}

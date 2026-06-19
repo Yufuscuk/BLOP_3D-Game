@@ -259,8 +259,8 @@ public class PlayerMovement : MonoBehaviour
                 timerText.text = "Time: " + Mathf.CeilToInt(timeLeft).ToString() + "s";
             }
 
-            // Zamanı yavaşlat (1 saniyeliğine 0.6x hız - daha dengeli ve akıcı bir oyun hissi için)
-            ActivateSlowMotion(1.0f, 0.6f);
+            // Zamanı yavaşlat (0.6 saniyeliğine 0.6x hız - daha dengeli ve akıcı bir oyun hissi için)
+            ActivateSlowMotion(0.6f, 0.6f);
 
             // Hafif sarsıntı tetikle
             if (cameraShake != null)
