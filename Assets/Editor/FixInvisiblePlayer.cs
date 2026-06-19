@@ -25,11 +25,24 @@ public class FixInvisiblePlayer
         bool changed = false;
 
         MeshRenderer playerRenderer = player.GetComponent<MeshRenderer>();
-        if (playerRenderer != null && !playerRenderer.enabled)
+        Transform slimeModel = player.transform.Find("SlimeModel");
+        if (slimeModel != null)
         {
-            playerRenderer.enabled = true;
-            changed = true;
-            Debug.Log("[FixPlayer] Kapsul tekrar gorunur hale getirildi.");
+            if (playerRenderer != null && playerRenderer.enabled)
+            {
+                playerRenderer.enabled = false;
+                changed = true;
+                Debug.Log("[FixPlayer] SlimeModel bulundugu icin kapsul MeshRenderer'i gizlendi.");
+            }
+        }
+        else
+        {
+            if (playerRenderer != null && !playerRenderer.enabled)
+            {
+                playerRenderer.enabled = true;
+                changed = true;
+                Debug.Log("[FixPlayer] Kapsul tekrar gorunur hale getirildi.");
+            }
         }
 
         if (changed)

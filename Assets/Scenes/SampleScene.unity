@@ -1911,6 +1911,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 4454459453331584116, guid: 8509d58abf93a234b848c3d55dafae22, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4454459453331584116, guid: 8509d58abf93a234b848c3d55dafae22, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4454459453331584116, guid: 8509d58abf93a234b848c3d55dafae22, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4454459453331584116, guid: 8509d58abf93a234b848c3d55dafae22, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1280
       objectReference: {fileID: 0}
@@ -1953,6 +1965,14 @@ PrefabInstance:
     - target: {fileID: 6385755388657530719, guid: 8509d58abf93a234b848c3d55dafae22, type: 3}
       propertyPath: m_Name
       value: Star
+      objectReference: {fileID: 0}
+    - target: {fileID: 6385755388657530719, guid: 8509d58abf93a234b848c3d55dafae22, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486440867998072506, guid: 8509d58abf93a234b848c3d55dafae22, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Video;
 
 public class SoundManager : MonoBehaviour
 {
@@ -6,6 +7,10 @@ public class SoundManager : MonoBehaviour
     private AudioClip starCollectClip;
     private AudioClip slowMotionClip;
     private AudioSource audioSource;
+
+    private AudioSource musicAudioSource;
+    private VideoPlayer musicVideoPlayer;
+    private bool isUsingVideoPlayer = false;
 
     public static SoundManager Instance
     {
@@ -45,6 +50,92 @@ public class SoundManager : MonoBehaviour
 
         // Zamani yavaslatma kapsulu sesini uretiyoruz
         slowMotionClip = GenerateSlowMotionSound();
+
+        // Arka plan muzigini yukle (AudioClip veya VideoClip olarak)
+        InitializeBackgroundMusic();
+    }
+
+    private void InitializeBackgroundMusic()
+    {
+        // 1. Ilk olarak standart AudioClip olarak yuklemeyi dene
+        AudioClip bgmClip = Resources.Load<AudioClip>("High_Score_Parade");
+        if (bgmClip != null)
+        {
+            musicAudioSource = gameObject.AddComponent<AudioSource>();
+            musicAudioSource.clip = bgmClip;
+            musicAudioSource.loop = true;
+            musicAudioSource.playOnAwake = false;
+            musicAudioSource.volume = 0.4f;
+            isUsingVideoPlayer = false;
+            Debug.Log("[SoundManager] Arka plan muzigi AudioClip olarak yuklendi.");
+        }
+        else
+        {
+            // 2. Bulunamazsa VideoClip (.mp4) olarak yuklemeyi dene
+            VideoClip bgmVideo = Resources.Load<VideoClip>("High_Score_Parade");
+            if (bgmVideo != null)
+            {
+                musicVideoPlayer = gameObject.AddComponent<VideoPlayer>();
+                musicVideoPlayer.playOnAwake = false;
+                musicVideoPlayer.source = VideoSource.VideoClip;
+                musicVideoPlayer.clip = bgmVideo;
+                musicVideoPlayer.isLooping = true;
+                musicVideoPlayer.renderMode = VideoRenderMode.APIOnly;
+
+                // Sesi AudioSource uzerinden calmak icin yonlendiriyoruz (ses kontrolu vb. icin)
+                AudioSource videoAudioSource = gameObject.AddComponent<AudioSource>();
+                videoAudioSource.playOnAwake = false;
+                videoAudioSource.loop = true;
+                videoAudioSource.volume = 0.4f;
+
+                musicVideoPlayer.audioOutputMode = VideoAudioOutputMode.AudioSource;
+                musicVideoPlayer.controlledAudioTrackCount = 1;
+                musicVideoPlayer.SetTargetAudioSource(0, videoAudioSource);
+
+                isUsingVideoPlayer = true;
+                Debug.Log("[SoundManager] Arka plan muzigi VideoClip (.mp4) olarak yuklendi.");
+            }
+            else
+            {
+                Debug.LogWarning("[SoundManager] Arka plan muzigi (High_Score_Parade) Resources klasorunde bulunamadi!");
+            }
+        }
+    }
+
+    public void PlayBackgroundMusic()
+    {
+        if (isUsingVideoPlayer)
+        {
+            if (musicVideoPlayer != null && !musicVideoPlayer.isPlaying)
+            {
+                musicVideoPlayer.Play();
+            }
+        }
+        else
+        {
+            if (musicAudioSource != null && !musicAudioSource.isPlaying)
+            {
+                musicAudioSource.Play();
+            }
+        }
+    }
+
+    public void StopBackgroundMusic()
+    {
+        if (isUsingVideoPlayer)
+        {
+            if (musicVideoPlayer != null && musicVideoPlayer.isPlaying)
+            {
+                musicVideoPlayer.Stop();
+            }
+        }
+        else
+        {
+            if (musicAudioSource != null && musicAudioSource.isPlaying)
+            {
+                musicAudioSource.Stop();
+            }
+        }
     }
 
     public void PlayStarSound()

@@ -62,6 +62,9 @@ public class PlayerMovement : MonoBehaviour
         {
             highScoreText.text = "Best: " + loadedHighScore;
         }
+
+        // Arka plan muzigini baslat
+        SoundManager.Instance.PlayBackgroundMusic();
     }
 
     void Update()
@@ -163,6 +166,9 @@ public class PlayerMovement : MonoBehaviour
             {
                 gameOverPanel.SetActive(true);
             }
+
+            // Arka plan muzigini durdur
+            SoundManager.Instance.StopBackgroundMusic();
         }
 
         // STAR

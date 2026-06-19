@@ -190,10 +190,22 @@ public class SceneAutoConfigurator
 
         // 8. Orijinal Player Gorunumunu Garantiye Al
         MeshRenderer playerRenderer = player.GetComponent<MeshRenderer>();
-        if (playerRenderer != null && !playerRenderer.enabled)
+        Transform slimeModel = player.transform.Find("SlimeModel");
+        if (slimeModel != null)
         {
-            playerRenderer.enabled = true;
-            changed = true;
+            if (playerRenderer != null && playerRenderer.enabled)
+            {
+                playerRenderer.enabled = false;
+                changed = true;
+            }
+        }
+        else
+        {
+            if (playerRenderer != null && !playerRenderer.enabled)
+            {
+                playerRenderer.enabled = true;
+                changed = true;
+            }
         }
 
         // Eklenen Saru veya baska modeller varsa temizle
