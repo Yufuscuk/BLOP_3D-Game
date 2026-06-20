@@ -39,6 +39,11 @@ public class PlayerMovement : MonoBehaviour
     private float scaleY = 1f;
     private float scaleYVelocity = 0f;
 
+    [Header("Mobil Kontroller (Swipe)")]
+    private Vector2 touchStartPos;
+    private bool isSwiping = false;
+    private float minSwipeDistance = 50f;
+
     void Start()
     {
         // TimerText UI eksikse otomatik uret (Runtime)
@@ -144,10 +149,46 @@ public class PlayerMovement : MonoBehaviour
         if (!isGameOver)
         {
             int oldLane = currentLane;
-            if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) && currentLane < 2)
+            
+            // Klavye Kontrolleri
+            bool moveUp = Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow);
+            bool moveDown = Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow);
+
+            // Mobil Swipe Kontrolleri
+            if (Input.touchCount > 0)
+            {
+                Touch touch = Input.GetTouch(0);
+
+                if (touch.phase == TouchPhase.Began)
+                {
+                    touchStartPos = touch.position;
+                    isSwiping = true;
+                }
+                else if (touch.phase == TouchPhase.Moved && isSwiping)
+                {
+                    float yDelta = touch.position.y - touchStartPos.y;
+                    
+                    // Sadece Y eksenindeki kaydırmayı dikkate al (Yukarı/Aşağı)
+                    if (Mathf.Abs(yDelta) > minSwipeDistance)
+                    {
+                        if (yDelta > 0)
+                            moveUp = true;
+                        else
+                            moveDown = true;
+                        
+                        isSwiping = false; // Ayni dokunusta birden fazla serit degistirmemek icin
+                    }
+                }
+                else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+                {
+                    isSwiping = false;
+                }
+            }
+
+            if (moveUp && currentLane < 2)
                 currentLane++;
 
-            if ((Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)) && currentLane > 0)
+            if (moveDown && currentLane > 0)
                 currentLane--;
 
             if (oldLane != currentLane)
@@ -164,11 +205,19 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // RESTART
-        if (isGameOver && Input.GetKeyDown(KeyCode.R))
+        if (isGameOver)
         {
-            Time.timeScale = 1f;
+            bool restartInput = Input.GetKeyDown(KeyCode.R);
+            
+            // Mouse (Editor testi icin) veya ekrana dokunma (Mobil icin)
+            if (Input.GetMouseButtonDown(0)) restartInput = true;
+            if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) restartInput = true;
 
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            if (restartInput)
+            {
+                Time.timeScale = 1f;
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
         }
     }
 
@@ -197,6 +246,20 @@ public class PlayerMovement : MonoBehaviour
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(true);
+            
+            // Mobilde 'R' tusu olmadigi icin, yalnizca telefonda oynaniyorsa ekrandaki yaziyi "Dokunarak Yeniden Basla" yapalim.
+            // Eger bilgisayarda oynaniyorsa "Press R" olarak kalmaya devam eder.
+            if (Application.isMobilePlatform)
+            {
+                TextMeshProUGUI[] texts = gameOverPanel.GetComponentsInChildren<TextMeshProUGUI>();
+                foreach (var txt in texts)
+                {
+                    if (txt.text.Contains("R ") || txt.text.Contains("Press R") || txt.text.Contains("Restart"))
+                    {
+                        txt.text = "Tap anywhere to Restart!";
+                    }
+                }
+            }
         }
 
         // Arka plan muzigini durdur
