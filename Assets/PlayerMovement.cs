@@ -9,6 +9,13 @@ public class PlayerMovement : MonoBehaviour
     void Awake()
     {
         Instance = this;
+
+        // Ekrani otomatik olarak yatay (Landscape) moda zorla ve dikey modu yasakla
+        Screen.autorotateToPortrait = false;
+        Screen.autorotateToPortraitUpsideDown = false;
+        Screen.autorotateToLandscapeLeft = true;
+        Screen.autorotateToLandscapeRight = true;
+        Screen.orientation = ScreenOrientation.AutoRotation;
     }
 
     public float laneDistance = 2f;
@@ -25,7 +32,7 @@ public class PlayerMovement : MonoBehaviour
     public float timeLeft = 30f;
 
     public float scoreMultiplier = 5f;
-    public float gameSpeed = 1f;
+    public float gameSpeed = 1.3f; // Oyunun başlangıç hızı (daha hızlı ve heyecanlı başlaması için 1.0 yerine 1.3 yaptık)
 
     private bool isGameOver = false;
     private CameraShake cameraShake;
@@ -79,6 +86,16 @@ public class PlayerMovement : MonoBehaviour
             cameraShake = Camera.main.GetComponent<CameraShake>();
         }
 
+        // Eger HighScoreText referansi build sirasinda kopmussa, sahnede isminden bul
+        if (highScoreText == null)
+        {
+            GameObject highGO = GameObject.Find("HighScoreText");
+            if (highGO != null)
+            {
+                highScoreText = highGO.GetComponent<TextMeshProUGUI>();
+            }
+        }
+
         // En yuksek skoru hafizadan yukle ve ekranda goster
         loadedHighScore = PlayerPrefs.GetInt("HighScore", 0);
         if (highScoreText != null)
@@ -124,9 +141,20 @@ public class PlayerMovement : MonoBehaviour
         // SCORE SYSTEM
         if (!isGameOver)
         {
-            // Zamanla hızlanma hızını azalttık (0.015f) ve maksimum 2.5f limit koyduk (Dengeli zorlasma)
-            gameSpeed += Time.deltaTime * 0.015f;
-            gameSpeed = Mathf.Min(gameSpeed, 2.5f);
+            // İvme (Zorlaşma) Algoritması: Hıza göre dinamik ivme
+            float currentAccel = 0.025f; // Başlangıçtan 2.5 hıza kadar
+            
+            if (gameSpeed >= 3.0f)
+            {
+                currentAccel = 0.00909f; // 3.0'dan 3.2'ye 22 saniyede çıkması için (Toplam 100. saniye)
+            }
+            else if (gameSpeed >= 2.5f)
+            {
+                currentAccel = 0.01666f; // 2.5'ten 3.0'a 30 saniyede çıkması için (Toplam 78. saniye)
+            }
+
+            gameSpeed += Time.deltaTime * currentAccel;
+            gameSpeed = Mathf.Min(gameSpeed, 3.2f); // Maksimum hızı 3.2'ye çıkardık!
 
             score += Time.deltaTime * scoreMultiplier * gameSpeed;
 
@@ -277,6 +305,8 @@ public class PlayerMovement : MonoBehaviour
         // STAR
         if (other.CompareTag("Star"))
         {
+            other.enabled = false; // Çift tetiklenmeyi önle
+
             // Cok hafif ve yumusak Kamera Sarsintisi (0.08 sn, 0.02 siddet)
             if (cameraShake != null)
             {
@@ -315,6 +345,8 @@ public class PlayerMovement : MonoBehaviour
         SlowMotionCapsule capsule = other.GetComponent<SlowMotionCapsule>();
         if (capsule != null)
         {
+            other.enabled = false; // Çift tetiklenmeyi önle (Bir obje +10 saniye vermesin)
+
             // Sure ekle (+5 saniye)
             timeLeft += 5f;
             if (timerText != null)

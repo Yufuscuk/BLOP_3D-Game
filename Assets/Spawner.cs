@@ -56,10 +56,10 @@ public class Spawner : MonoBehaviour
         // PSİKOLOJİK ZORLUK ALGORİTMASI (Stres ve Bağlılık için)
         // Oyun başında (hız 1.0) kapsüller 7.5 saniyede bir gelir. (5 saniye verdiği için net -2.5s zarar).
         // Bu, 30 saniyelik başlangıç süresini eriterek oyuncuda "süre azalıyor" stresi yaratır.
-        // Oyun en yüksek hıza (2.5) ulaştığında ise aralık 4.2 saniyeye iner. (Net +0.8s kâr).
+        // Oyun en yüksek hıza (3.2) ulaştığında ise aralık 4.2 saniyeye iner. (Net +0.8s kâr).
         // Bu sayede yetenekli bir oyuncu max hızda hiç hata yapmazsa süresini yavaş yavaş tekrar biriktirebilir 
         // ve kendine 3 defaya kadar hata yapma (kapsül kaçırma) hakkı (buffer) oluşturabilir!
-        float currentCapsuleInterval = Mathf.Lerp(7.5f, 4.2f, (currentSpeed - 1f) / 1.5f);
+        float currentCapsuleInterval = Mathf.Lerp(7.5f, 4.2f, (currentSpeed - 1f) / 2.2f);
         
         if (capsuleTimer >= currentCapsuleInterval)
         {

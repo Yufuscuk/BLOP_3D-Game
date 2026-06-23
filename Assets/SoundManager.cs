@@ -65,7 +65,7 @@ public class SoundManager : MonoBehaviour
             musicAudioSource.clip = bgmClip;
             musicAudioSource.loop = true;
             musicAudioSource.playOnAwake = false;
-            musicAudioSource.volume = 0.4f;
+            musicAudioSource.volume = 0.85f;
             isUsingVideoPlayer = false;
             Debug.Log("[SoundManager] Arka plan muzigi AudioClip olarak yuklendi.");
         }
@@ -86,7 +86,7 @@ public class SoundManager : MonoBehaviour
                 AudioSource videoAudioSource = gameObject.AddComponent<AudioSource>();
                 videoAudioSource.playOnAwake = false;
                 videoAudioSource.loop = true;
-                videoAudioSource.volume = 0.4f;
+                videoAudioSource.volume = 0.85f;
 
                 musicVideoPlayer.audioOutputMode = VideoAudioOutputMode.AudioSource;
                 musicVideoPlayer.controlledAudioTrackCount = 1;
@@ -186,7 +186,7 @@ public class SoundManager : MonoBehaviour
                 envelope = Mathf.Lerp(1f, 0f, (t - 0.32f) / (duration - 0.32f));
             }
 
-            samples[i] = wave * 0.35f * envelope;
+            samples[i] = wave * 0.70f * envelope;
         }
 
         AudioClip clip = AudioClip.Create("SlowMotionSound", sampleCount, 1, samplerate, false);
@@ -244,7 +244,7 @@ public class SoundManager : MonoBehaviour
             }
 
             // Sesi olustur
-            samples[i] = wave * 0.22f * envelope;
+            samples[i] = wave * 0.55f * envelope;
         }
 
         AudioClip clip = AudioClip.Create("StarCollectSound", sampleCount, 1, samplerate, false);
